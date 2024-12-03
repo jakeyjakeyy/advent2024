@@ -6,20 +6,15 @@ fn main() {
     for line in input.lines() {
         let levels: Vec<&str> = line.split(" ").collect();
         if is_safe(levels.clone(), false) {
-            println!("Safe: {levels:?}");
             safe += 1;
-        } else {
-            println!("Unsafe: {levels:?}");
         }
     }
     println!("Safe: {}", safe);
 
     fn is_safe(levels: Vec<&str>, recursion: bool) -> bool {
-        println!("Levels: {levels:?}");
         let mut last = 0;
         let mut i = 0;
         for level in &levels {
-            println!("i: {i}");
             if i + 1 >= levels.len() {
                 break;
             }
