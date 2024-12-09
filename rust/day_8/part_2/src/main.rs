@@ -1,7 +1,7 @@
 use std::fs;
 use std::collections::{HashMap, HashSet};
 fn main() {
-    let input = fs::read_to_string("src/input.sample.txt").unwrap();
+    let input = fs::read_to_string("src/input.txt").unwrap();
     let lines = input.lines();
     let mut arr_2d: Vec<Vec<char>> = Vec::new();
     for line in lines {
@@ -27,25 +27,41 @@ fn main() {
                 if x == x2 && y == y2 {
                     continue;
                 }
-                let dx = x - x2;
-                let dx2 = x2 - x;
-                let dy = y - y2;
-                let dy2 = y2 - y;
+                let mut i = 1;
+                loop {
+                    let mut changed = false;
+                    let dx = (x - x2) * i;
+                    let dx2 = (x2 - x) * i;
+                    let dy = (y - y2) * i;
+                    let dy2 = (y2 - y) * i;
 
-                let antinode_1 = (x + dx, y + dy);
-                let antinode_2 = (x2 + dx2, y2 + dy2);
+                    let antinode_1 = (x + dx, y + dy);
+                    let antinode_2 = (x2 + dx2, y2 + dy2);
+                    
+                    if i == 1 &&
+                        !seen_tuples.contains(&(*x, *y)) {
+                        antinodes.entry(*ch).or_insert(Vec::new()).push((*x, *y));
+                        seen_tuples.insert((*x, *y));
+                    }
 
-                if antinode_1.0 >= 0 && antinode_1.0 < arr_2d[0].len() as i32 &&
-                    antinode_1.1 >= 0 && antinode_1.1 < arr_2d.len() as i32 &&
-                    !seen_tuples.contains(&antinode_1) {
-                        antinodes.entry(*ch).or_insert(Vec::new()).push(antinode_1);
-                        seen_tuples.insert(antinode_1);
-                }
-                if antinode_2.0 >= 0 && antinode_2.0 < arr_2d[0].len() as i32 &&
-                    antinode_2.1 >= 0 && antinode_2.1 < arr_2d.len() as i32 &&
-                    !seen_tuples.contains(&antinode_2) {
-                        antinodes.entry(*ch).or_insert(Vec::new()).push(antinode_2);
-                        seen_tuples.insert(antinode_2);
+                    if in_bounds(antinode_1.0, antinode_1.1, &arr_2d) &&
+                        !seen_tuples.contains(&antinode_1) {
+                            antinodes.entry(*ch).or_insert(Vec::new()).push(antinode_1);
+                            seen_tuples.insert(antinode_1);
+                            changed = true;
+                        }
+                    if in_bounds(antinode_2.0, antinode_2.1, &arr_2d) &&
+                        !seen_tuples.contains(&antinode_2) {
+                            antinodes.entry(*ch).or_insert(Vec::new()).push(antinode_2);
+                            seen_tuples.insert(antinode_2);
+                            changed = true;
+                        }
+                    i += 1; 
+                    if !changed && 
+                        !in_bounds(antinode_1.0, antinode_2.1, &arr_2d) &&
+                        !in_bounds(antinode_2.0, antinode_2.1, &arr_2d) {
+                        break;
+                    }
                 }
             }
         }
@@ -53,8 +69,11 @@ fn main() {
 
     let mut total = 0;
     for (ch, coords) in antinodes {
-        println!("{}: {:?}", ch, coords);
         total += coords.len();
     }
     println!("{}", total);
+}
+
+fn in_bounds(x: i32, y: i32, arr: &Vec<Vec<char>>) -> bool {
+    x >= 0 && x < arr[0].len() as i32 && y >= 0 && y < arr.len() as i32
 }
