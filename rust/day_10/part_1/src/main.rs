@@ -26,13 +26,13 @@ fn find_trails(arr_2d: &Vec<Vec<String>>, row: usize, col: usize, found_trail_en
     let directions = ["up", "down", "left", "right"];
 
     let mut found_trails = 0;
-    let mut trail_endings = found_trail_endings.clone(); // Clone to create owned vector
+    let mut trail_endings = found_trail_endings.clone();
     let current_elevation = &arr_2d[row][col].parse::<i32>().unwrap();
     
     if *current_elevation == 9 {
-        if trail_endings.contains(&(row, col)) {
-            return (0, trail_endings);
-        }
+        // if trail_endings.contains(&(row, col)) {
+        //     return (0, trail_endings);
+        // }
         trail_endings.push((row, col));
         return (1, trail_endings);
     }
