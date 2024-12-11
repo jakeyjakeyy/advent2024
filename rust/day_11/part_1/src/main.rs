@@ -1,9 +1,13 @@
 use std::fs;
 use std::collections::HashMap;
+use std::time::Instant;
 
 fn main() {
+    let timer = Instant::now();
+
     let input = fs::read_to_string("src/input.txt").unwrap();
 
+    let mut cache = HashMap::new();
     let mut total_stones: u64 = input.split(" ").count() as u64;
     let amt = input.split(" ").count();
     let mut i = 0;
@@ -11,11 +15,13 @@ fn main() {
         let value = stone.parse::<u64>().unwrap();
         let blinks = 75;
         
-        total_stones += blink_controller(value, blinks);
+        total_stones += blink(value, blinks, &mut cache);
         i += 1;
         println!("{}/{}: {}", i, amt, total_stones);
     }
+    let elapsed = timer.elapsed();
     println!("Total stones: {}", total_stones);
+    println!("Time elapsed: {:.2?}", elapsed);
 }
 
 fn blink(value: u64, blinks: i32, cache: &mut HashMap<(u64, i32), u64>) -> u64 {
@@ -44,9 +50,4 @@ fn blink(value: u64, blinks: i32, cache: &mut HashMap<(u64, i32), u64>) -> u64 {
     }
     cache.insert((value, blinks), new_stones);
     new_stones
-}
-
-fn blink_controller(value: u64, blinks: i32) -> u64 {
-    let mut cache = HashMap::new();
-    blink(value, blinks, &mut cache)
 }
